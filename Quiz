@@ -1,0 +1,82 @@
+print("Welcome to my computer quiz!")
+
+playing = input("Do you want to play? ")
+
+if playing.lower() != "yes":
+    quit()
+
+print("Okay! Let's play :)")
+score = 0
+
+answer = input("What does CPU stand for? ")
+if answer.lower() == "central processing unit":
+    print('Correct!')
+    score += 1
+else:
+    print("Incorrect!")
+
+answer = input("What does GPU stand for? ")
+if answer.lower() == "graphics processing unit":
+    print('Correct!')
+    score += 1
+else:
+    print("Incorrect!")
+
+answer = input("What does RAM stand for? ")
+if answer.lower() == "random access memory":
+    print('Correct!')
+    score += 1
+else:
+    print("Incorrect!")
+
+answer = input("What does PSU stand for? ")
+if answer.lower() == "power supply":
+    print('Correct!')
+    score += 1
+else:
+    print("Incorrect!")
+
+answer = input("_____are used to automatically sort garbadge ")
+if answer.lower() == "smart bins":
+    print('correct!')
+    score += 1
+else:
+    print("incorrect")
+
+answer = input("What does RPA stands for? ")
+if answer.lower() == "robotic process automation":
+    print('correct')
+    score += 1
+else:
+    print("incorrect")
+
+answer = input("Microsoft,in partnership with ICRISAT has developed ")
+if answer.lower() == "ai sowing app":
+    print('correct')
+    score += 1
+else:
+    print("incorrect")
+
+answer = input("How many SDG's are there? ")
+if answer.lower() == "17":
+    print('correct')
+    score += 1
+else:
+    print("incorrect")
+
+answer = input("what is the act of providing AI services to business called? ")
+if answer.lower() == "aiaas":
+    print('correct')
+    score += 1
+else:
+    print("incorrect")
+
+answer = input("What does AI stands for? ")
+if answer.lower() == "artificial intelligence":
+    print('correct')
+    score += 1
+else:
+    print("incorrect")
+
+print("You got " + str(score) + " questions correct!")
+print("You got " + str((score / 10) * 100) + "%.")
