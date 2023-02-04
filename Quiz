@@ -80,3 +80,4 @@ else:
 
 print("You got " + str(score) + " questions correct!")
 print("You got " + str((score / 10) * 100) + "%.")
+print("Thank You")
