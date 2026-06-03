@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyQuest 🎮📚</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7C3AED;
+    --purple-light: #A78BFA;
+    --purple-dark: #5B21B6;
+    --yellow: #F59E0B;
+    --gold: #D97706;
+    --green: #10B981;
+    --red: #EF4444;
+    --blue: #3B82F6;
+    --bg: #0F0A1E;
+    --bg2: #1A1035;
+    --bg3: #241547;
+    --card: #1E1040;
+    --card2: #2A1A55;
+    --text: #F3F0FF;
+    --text2: #C4B5FD;
+    --border: #3D2B6E;
+    --shadow: 0 4px 24px rgba(124,58,237,0.3);
+  }
+  .light-mode {
+    --bg: #F5F0FF;
+    --bg2: #EDE9FE;
+    --bg3: #DDD6FE;
+    --card: #FFFFFF;
+    --card2: #F5F0FF;
+    --text: #1E1040;
+    --text2: #5B21B6;
+    --border: #C4B5FD;
+    --shadow: 0 4px 24px rgba(124,58,237,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.3s, color 0.3s;
+  }
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* TOP BAR */
+  #topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg2);
+    border-bottom: 2px solid var(--border);
+    padding: 8px 16px;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow);
+  }
+  #topbar.visible { display: flex; }
+  .tb-avatar { font-size: 28px; cursor: pointer; }
+  .tb-level { font-weight: 800; color: var(--yellow); font-size: 14px; white-space: nowrap; }
+  .xp-bar-wrap { flex: 1; min-width: 80px; background: var(--bg3); border-radius: 20px; height: 12px; overflow: hidden; }
+  .xp-bar { height: 100%; background: linear-gradient(90deg, var(--purple), var(--purple-light)); border-radius: 20px; transition: width 0.6s cubic-bezier(.4,2,.6,1); }
+  .tb-hearts { font-size: 14px; white-space: nowrap; }
+  .tb-coins { font-size: 14px; color: var(--yellow); font-weight: 700; white-space: nowrap; }
+  .tb-streak { font-size: 14px; color: #FF6B35; font-weight: 700; white-space: nowrap; }
+  .tb-btns { display: flex; gap: 8px; margin-left: auto; }
+  .tb-btn { background: var(--bg3); border: none; color: var(--text); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: 600; }
+  .tb-btn:hover { background: var(--border); }
+
+  /* SETUP SCREEN */
+  #setup-screen {
+    background: linear-gradient(135deg, #0F0A1E 0%, #1A0A3A 50%, #0A1A2E 100%);
+    justify-content: center; align-items: center; padding: 20px;
+  }
+  .setup-box {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 24px;
+    padding: 40px 32px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.5s ease;
+  }
+  .logo { text-align: center; margin-bottom: 8px; }
+  .logo-emoji { font-size: 56px; }
+  .logo-title { font-size: 36px; font-weight: 900; background: linear-gradient(135deg, var(--purple-light), var(--yellow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .logo-sub { color: var(--text2); font-size: 14px; margin-top: 4px; }
+  .setup-section { margin-top: 24px; }
+  .setup-label { font-weight: 700; font-size: 14px; color: var(--text2); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .input-row { display: flex; gap: 8px; }
+  .input-field {
+    flex: 1; background: var(--bg3); border: 2px solid var(--border); color: var(--text);
+    padding: 12px 16px; border-radius: 12px; font-family: inherit; font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  .input-field:focus { outline: none; border-color: var(--purple-light); }
+  .btn {
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    color: #fff; border: none; padding: 12px 20px; border-radius: 12px;
+    font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 16px rgba(124,58,237,0.4);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124,58,237,0.5); }
+  .btn:active { transform: translateY(0); }
+  .btn-yellow { background: linear-gradient(135deg, var(--yellow), var(--gold)); box-shadow: 0 4px 16px rgba(245,158,11,0.4); }
+  .btn-yellow:hover { box-shadow: 0 6px 20px rgba(245,158,11,0.5); }
+  .btn-green { background: linear-gradient(135deg, var(--green), #059669); box-shadow: 0 4px 16px rgba(16,185,129,0.4); }
+  .btn-red { background: linear-gradient(135deg, var(--red), #DC2626); box-shadow: 0 4px 16px rgba(239,68,68,0.4); }
+  .btn-sm { padding: 8px 14px; font-size: 13px; }
+  .btn-lg { padding: 16px 32px; font-size: 17px; border-radius: 16px; }
+  .btn-full { width: 100%; }
+  .tooltip-wrap { position: relative; display: inline-block; }
+  .tooltip-icon { color: var(--text2); cursor: pointer; font-size: 16px; }
+  .tooltip-box {
+    display: none; position: absolute; left: 0; top: 24px; z-index: 200;
+    background: var(--card2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; font-size: 12px; width: 220px; box-shadow: var(--shadow);
+  }
+  .tooltip-wrap:hover .tooltip-box { display: block; }
+  .tooltip-box a { color: var(--purple-light); }
+  .drop-zone {
+    border: 2px dashed var(--border); border-radius: 16px; padding: 32px;
+    text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--purple-light); background: rgba(124,58,237,0.1); }
+  .drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .drop-icon { font-size: 40px; margin-bottom: 8px; }
+  .drop-text { font-size: 14px; color: var(--text2); }
+  .chapter-list { margin-top: 16px; max-height: 200px; overflow-y: auto; }
+  .chapter-item {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 8px; font-size: 14px; font-weight: 600;
+  }
+
+  /* SPINNER */
+  .spinner-wrap { text-align: center; padding: 20px; }
+  .spinner {
+    width: 40px; height: 40px; border: 4px solid var(--border);
+    border-top-color: var(--purple-light); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* WORLD MAP */
+  #map-screen { padding: 20px; align-items: center; }
+  .map-nodes { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+  .map-node-wrap { display: flex; flex-direction: column; align-items: center; }
+  .map-node {
+    width: 88px; height: 88px; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; margin: 16px 0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 4px solid transparent;
+  }
+  .map-node.unlocked { background: linear-gradient(135deg, var(--purple), var(--purple-dark)); border-color: var(--purple-light); box-shadow: 0 0 20px rgba(124,58,237,0.5); }
+  .map-node.current { animation: mapPulse 1.5s infinite; background: linear-gradient(135deg, var(--yellow), var(--gold)); border-color: #FDE68A; box-shadow: 0 0 30px rgba(245,158,11,0.6); }
+  .map-node.locked { background: var(--bg3); border-color: var(--border); opacity: 0.5; cursor: default; }
+  .map-node.completed { background: linear-gradient(135deg, var(--green), #059669); border-color: #6EE7B7; box-shadow: 0 0 20px rgba(16,185,129,0.4); }
+  .map-node:hover:not(.locked) { transform: scale(1.1); }
+  .node-num { font-size: 22px; font-weight: 900; color: #fff; }
+  .node-lock { font-size: 22px; }
+  .node-stars { font-size: 12px; position: absolute; bottom: -20px; white-space: nowrap; }
+  .node-label { font-size: 12px; font-weight: 700; color: var(--text2); text-align: center; max-width: 140px; margin-top: 24px; line-height: 1.3; }
+  .map-connector { width: 4px; height: 32px; background: linear-gradient(to bottom, var(--border), var(--purple-dark)); border-radius: 2px; }
+  @keyframes mapPulse { 0%,100%{box-shadow:0 0 20px rgba(245,158,11,0.6)} 50%{box-shadow:0 0 40px rgba(245,158,11,0.9)} }
+
+  /* CHAPTER SCREEN */
+  #chapter-screen { padding: 20px; align-items: center; }
+  .chapter-card {
+    background: var(--card); border: 2px solid var(--border); border-radius: 20px;
+    padding: 28px; max-width: 600px; width: 100%; box-shadow: var(--shadow);
+    animation: fadeInUp 0.3s ease;
+  }
+  .chapter-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .back-btn { background: var(--bg3); border: none; color: var(--text); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: 700; }
+  .back-btn:hover { background: var(--border); }
+  .chapter-title { font-size: 20px; font-weight: 900; }
+  .chapter-stars-row { font-size: 22px; margin-bottom: 4px; }
+  .chapter-summary { color: var(--text2); font-size: 14px; line-height: 1.7; margin-bottom: 20px; background: var(--bg3); border-radius: 12px; padding: 16px; }
+  .chapter-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .action-card {
+    background: var(--bg3); border: 2px solid var(--border); border-radius: 16px;
+    padding: 18px; text-align: center; cursor: pointer; transition: all 0.2s;
+  }
+  .action-card:hover:not(.locked-action) { border-color: var(--purple-light); transform: translateY(-2px); }
+  .action-card.locked-action { opacity: 0.45; cursor: not-allowed; }
+  .action-icon { font-size: 30px; margin-bottom: 6px; }
+  .action-title { font-weight: 800; font-size: 14px; }
+  .action-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
+
+  /* GAME CARDS */
+  #lesson-screen, #quiz-screen, #boss-screen { padding: 20px; align-items: center; }
+  .game-card {
+    background: var(--card); border: 2px solid var(--border); border-radius: 20px;
+    padding: 28px; max-width: 600px; width: 100%; box-shadow: var(--shadow);
+    position: relative; overflow: hidden; animation: slideIn 0.3s ease;
+  }
+  .progress-bar-wrap { background: var(--bg3); border-radius: 20px; height: 10px; margin-bottom: 20px; overflow: hidden; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--green), #34D399); border-radius: 20px; transition: width 0.4s ease; }
+  .question-num { font-size: 13px; color: var(--text2); font-weight: 700; margin-bottom: 10px; }
+  .question-text { font-size: 17px; font-weight: 800; line-height: 1.5; margin-bottom: 20px; }
+  .options-grid { display: grid; gap: 10px; }
+  .option-btn {
+    background: var(--bg3); border: 2px solid var(--border); color: var(--text);
+    padding: 13px 16px; border-radius: 12px; text-align: left; cursor: pointer;
+    font-family: inherit; font-size: 14px; font-weight: 600; transition: all 0.15s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--purple-light); background: rgba(124,58,237,0.15); }
+  .option-btn.correct { background: rgba(16,185,129,0.2) !important; border-color: var(--green) !important; color: var(--green) !important; }
+  .option-btn.wrong { background: rgba(239,68,68,0.2) !important; border-color: var(--red) !important; color: var(--red) !important; }
+  .option-btn:disabled { cursor: default; }
+  .option-letter {
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid currentColor;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0;
+  }
+  .timer-bar-wrap { background: var(--bg3); border-radius: 20px; height: 8px; margin-bottom: 14px; overflow: hidden; }
+  .timer-bar { height: 100%; background: linear-gradient(90deg, var(--green) 0%, var(--yellow) 50%, var(--red) 100%); border-radius: 20px; transition: width 0.1s linear; }
+  .explanation-box { background: rgba(16,185,129,0.1); border: 1px solid var(--green); border-radius: 12px; padding: 14px; margin-top: 14px; font-size: 13px; color: #6EE7B7; line-height: 1.5; }
+  .explanation-box.wrong-exp { background: rgba(239,68,68,0.1); border-color: var(--red); color: #FCA5A5; }
+  .combo-badge {
+    position: absolute; top: 16px; right: 16px;
+    background: linear-gradient(135deg, var(--yellow), var(--gold));
+    color: #000; font-weight: 900; font-size: 12px; padding: 4px 10px; border-radius: 20px;
+    animation: pop 0.3s ease;
+  }
+  @keyframes pop { 0%{transform:scale(0.5)} 80%{transform:scale(1.2)} 100%{transform:scale(1)} }
+
+  /* LESSON */
+  .lesson-card-content { text-align: center; padding: 8px 0; }
+  .lesson-emoji { font-size: 52px; margin-bottom: 14px; }
+  .lesson-concept { font-size: 18px; font-weight: 900; color: var(--purple-light); margin-bottom: 12px; }
+  .lesson-explanation { font-size: 15px; line-height: 1.7; color: var(--text); }
+  .lesson-check-title { font-size: 15px; font-weight: 800; margin-bottom: 10px; color: var(--yellow); }
+
+  /* END */
+  .end-card { text-align: center; }
+  .end-emoji { font-size: 60px; margin-bottom: 10px; }
+  .end-title { font-size: 26px; font-weight: 900; margin-bottom: 8px; }
+  .end-stars { font-size: 32px; margin-bottom: 14px; }
+  .end-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .end-stat { background: var(--bg3); border-radius: 12px; padding: 12px; }
+  .end-stat-val { font-size: 22px; font-weight: 900; color: var(--yellow); }
+  .end-stat-label { font-size: 11px; color: var(--text2); margin-top: 3px; }
+  .end-btns { display: flex; gap: 10px; }
+
+  /* BOSS */
+  #boss-screen { background: linear-gradient(135deg, #080012 0%, #180028 100%); }
+  .boss-header { text-align: center; margin-bottom: 16px; }
+  .boss-emoji-big { font-size: 68px; animation: bossBounce 2s infinite; display: block; }
+  @keyframes bossBounce { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-8px) scale(1.08)} }
+  .boss-title-text { font-size: 22px; font-weight: 900; color: #FF6BFF; text-shadow: 0 0 16px #FF6BFF; margin-top: 6px; }
+  .boss-hearts-row { font-size: 22px; text-align: center; margin-bottom: 14px; }
+  .boss-card { border-color: #9333EA !important; box-shadow: 0 0 30px rgba(147,51,234,0.4) !important; background: #120025 !important; }
+
+  /* PROFILE */
+  #profile-screen { padding: 20px; align-items: center; }
+  .profile-card { background: var(--card); border: 2px solid var(--border); border-radius: 20px; padding: 22px; max-width: 600px; width: 100%; box-shadow: var(--shadow); margin-bottom: 14px; }
+  .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+  .profile-avatar-big { font-size: 52px; }
+  .profile-name { font-size: 20px; font-weight: 900; }
+  .profile-level-text { color: var(--yellow); font-weight: 700; font-size: 14px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat-box { background: var(--bg3); border-radius: 12px; padding: 12px; text-align: center; }
+  .stat-val { font-size: 20px; font-weight: 900; color: var(--purple-light); }
+  .stat-label { font-size: 11px; color: var(--text2); margin-top: 3px; font-weight: 600; }
+  .achievements-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .achievement { background: var(--bg3); border: 2px solid var(--border); border-radius: 12px; padding: 10px 6px; text-align: center; }
+  .achievement.unlocked { border-color: var(--yellow); background: rgba(245,158,11,0.1); }
+  .achievement.locked-ach { opacity: 0.35; filter: grayscale(1); }
+  .achievement-icon { font-size: 24px; margin-bottom: 3px; }
+  .achievement-name { font-size: 9px; font-weight: 700; color: var(--text2); }
+  .xp-chart { display: flex; align-items: flex-end; gap: 5px; height: 70px; padding: 6px 0; }
+  .xp-bar-item { flex: 1; background: linear-gradient(to top, var(--purple), var(--purple-light)); border-radius: 3px 3px 0 0; min-height: 4px; }
+  .section-title { font-size: 15px; font-weight: 800; color: var(--text2); margin-bottom: 10px; }
+
+  /* SHOP */
+  #shop-screen { padding: 20px; align-items: center; }
+  .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 600px; width: 100%; }
+  .shop-item { background: var(--card); border: 2px solid var(--border); border-radius: 18px; padding: 18px; text-align: center; box-shadow: var(--shadow); transition: transform 0.2s; }
+  .shop-item:hover { transform: translateY(-3px); }
+  .shop-icon { font-size: 38px; margin-bottom: 8px; }
+  .shop-name { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+  .shop-desc { font-size: 11px; color: var(--text2); margin-bottom: 12px; line-height: 1.4; }
+  .shop-price { font-size: 15px; font-weight: 900; color: var(--yellow); margin-bottom: 10px; }
+
+  /* CONFETTI */
+  #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9998; }
+
+  /* FLASH */
+  .flash-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.15s; }
+  .flash-overlay.green { background: rgba(16,185,129,0.2); }
+  .flash-overlay.red { background: rgba(239,68,68,0.2); }
+  .flash-overlay.show { opacity: 1; }
+
+  /* ANIMATIONS */
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes slideIn { from{transform:translateX(40px);opacity:0} to{transform:translateX(0);opacity:1} }
+  @keyframes heartShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  @keyframes levelUpFlash { 0%{transform:scale(1)} 50%{transform:scale(1.4);filter:brightness(2)} 100%{transform:scale(1)} }
+  .heart-shake { animation: heartShake 0.35s ease; }
+  .level-up-anim { animation: levelUpFlash 0.5s ease; }
+
+  /* MISC */
+  .divider { height: 1px; background: var(--border); margin: 18px 0; }
+  .text-muted { color: var(--text2); font-size: 13px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .screen-title { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+  .screen-sub { color: var(--text2); font-size: 13px; margin-bottom: 18px; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--card); border: 2px solid var(--border); border-radius: 14px;
+    padding: 10px 20px; font-weight: 700; font-size: 14px; z-index: 99999;
+    animation: toastPop 0.3s ease; pointer-events: none; white-space: nowrap;
+    box-shadow: var(--shadow);
+  }
+  @keyframes toastPop { from{opacity:0;transform:translateX(-50%) translateY(16px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  .xp-popup {
+    position: fixed; pointer-events: none; z-index: 9999;
+    font-weight: 900; font-size: 22px; color: var(--yellow);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    animation: xpFloat 1.2s ease forwards;
+  }
+  @keyframes xpFloat { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-80px) scale(1.3)} }
+
+  @media (max-width: 480px) {
+    .setup-box { padding: 20px 14px; }
+    .chapter-actions { grid-template-columns: 1fr; }
+    .end-stats { grid-template-columns: 1fr 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .achievements-grid { grid-template-columns: repeat(3,1fr); }
+    .shop-grid { grid-template-columns: 1fr; }
+    .logo-title { font-size: 26px; }
+    .game-card { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+<div class="flash-overlay" id="flash-overlay"></div>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <span class="tb-avatar" id="tb-avatar">🐣</span>
+  <div>
+    <div class="tb-level" id="tb-level">Lv.1</div>
+    <div class="xp-bar-wrap" style="width:90px">
+      <div class="xp-bar" id="tb-xp-bar" style="width:0%"></div>
+    </div>
+  </div>
+  <span class="tb-hearts" id="tb-hearts">❤️❤️❤️❤️❤️</span>
+  <span class="tb-coins" id="tb-coins">🪙 0</span>
+  <span class="tb-streak" id="tb-streak">🔥 0</span>
+  <div class="tb-btns">
+    <button class="tb-btn" onclick="showScreen('map-screen')">🗺️ Map</button>
+    <button class="tb-btn" onclick="showScreen('profile-screen');renderProfile()">👤</button>
+    <button class="tb-btn" onclick="showScreen('shop-screen')">🛒</button>
+    <button class="tb-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+  </div>
+</div>
+
+<!-- ===== SETUP SCREEN ===== -->
+<div id="setup-screen" class="screen active">
+  <div class="setup-box">
+    <div class="logo">
+      <div class="logo-emoji">🎮📚</div>
+      <div class="logo-title">StudyQuest</div>
+      <div class="logo-sub">Turn your textbook into an epic adventure</div>
+    </div>
+
+    <div class="setup-section">
+      <div class="setup-label">
+        🔑 Gemini API Key
+        <div class="tooltip-wrap">
+          <span class="tooltip-icon">ℹ️</span>
+          <div class="tooltip-box">
+            Get a FREE key at <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a><br><br>
+            Sign in → Get API Key → Create API Key<br><br>
+            <span style="color:var(--green)">✓ Gemini 3.5 Flash is free!</span>
+          </div>
+        </div>
+      </div>
+      <div class="input-row">
+        <input type="password" class="input-field" id="api-key-input" placeholder="AIza...">
+        <button class="btn btn-sm" onclick="saveApiKey()">Save</button>
+      </div>
+      <div id="api-key-status" class="text-muted mt-12"></div>
+    </div>
+
+    <div class="setup-section">
+      <div class="setup-label">📄 Upload PDF Textbook</div>
+      <div class="drop-zone" id="drop-zone">
+        <input type="file" accept=".pdf" id="pdf-input" onchange="handleFile(this.files[0])">
+        <div class="drop-icon">📂</div>
+        <div class="drop-text">Drag & drop your PDF here<br>or click to browse</div>
+      </div>
+      <div id="pdf-status" class="text-muted mt-12" style="text-align:center"></div>
+    </div>
+
+    <div id="chapter-section" style="display:none">
+      <div class="divider"></div>
+      <div class="setup-label">📖 Detected Chapters</div>
+      <div class="chapter-list" id="chapter-list"></div>
+      <div class="text-muted mt-12" id="chapter-count"></div>
+      <button class="btn btn-yellow btn-full btn-lg mt-16" onclick="startAdventure()">
+        🚀 Start Adventure!
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WORLD MAP ===== -->
+<div id="map-screen" class="screen">
+  <div style="width:100%;max-width:500px;margin:0 auto;padding:20px">
+    <div class="screen-title">🗺️ Quest Map</div>
+    <div class="screen-sub">Choose your next chapter to conquer!</div>
+    <div id="map-nodes" class="map-nodes"></div>
+  </div>
+</div>
+
+<!-- ===== CHAPTER SCREEN ===== -->
+<div id="chapter-screen" class="screen">
+  <div style="width:100%;max-width:600px;margin:20px auto;padding:0 20px">
+    <div class="chapter-card">
+      <div class="chapter-header">
+        <button class="back-btn" onclick="showScreen('map-screen')">←</button>
+        <div>
+          <div class="chapter-title" id="ch-title">Chapter</div>
+          <div class="chapter-stars-row" id="ch-stars"></div>
+        </div>
+      </div>
+      <div id="ch-loading" class="spinner-wrap">
+        <div class="spinner"></div>
+        <div class="text-muted">AI is reading this chapter... ✨</div>
+      </div>
+      <div class="chapter-summary" id="ch-summary" style="display:none"></div>
+      <div class="chapter-actions mt-16">
+        <div class="action-card" onclick="startLesson()">
+          <div class="action-icon">📖</div>
+          <div class="action-title">Learn</div>
+          <div class="action-sub">5 cards + mini quiz</div>
+        </div>
+        <div class="action-card" onclick="startQuiz('quick')">
+          <div class="action-icon">⚡</div>
+          <div class="action-title">Quick Quiz</div>
+          <div class="action-sub">5 questions • XP</div>
+        </div>
+        <div class="action-card" id="boss-action" onclick="startBoss()">
+          <div class="action-icon">👾</div>
+          <div class="action-title">Boss Battle</div>
+          <div class="action-sub" id="boss-sub">🔒 Pass Quiz first</div>
+        </div>
+        <div class="action-card" onclick="startQuiz('full')">
+          <div class="action-icon">🎯</div>
+          <div class="action-title">Full Quiz</div>
+          <div class="action-sub">10 questions • Max XP</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LESSON SCREEN ===== -->
+<div id="lesson-screen" class="screen">
+  <div style="width:100%;max-width:600px;margin:20px auto;padding:0 20px">
+    <div class="game-card" id="lesson-card">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="lesson-progress" style="width:0%"></div>
+      </div>
+      <div class="question-num" id="lesson-step-label"></div>
+      <div id="lesson-content"></div>
+      <div class="mt-16" id="lesson-actions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ SCREEN ===== -->
+<div id="quiz-screen" class="screen">
+  <div style="width:100%;max-width:600px;margin:20px auto;padding:0 20px">
+    <div class="game-card" id="quiz-card">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="quiz-progress" style="width:0%"></div>
+      </div>
+      <div class="timer-bar-wrap">
+        <div class="timer-bar" id="timer-bar" style="width:100%"></div>
+      </div>
+      <div class="question-num" id="quiz-q-num"></div>
+      <div id="combo-display"></div>
+      <div class="question-text" id="quiz-question"></div>
+      <div class="options-grid" id="quiz-options"></div>
+      <div id="quiz-explanation"></div>
+      <div class="mt-16" id="quiz-next-wrap" style="display:none">
+        <button class="btn btn-full" onclick="nextQuizQuestion()">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BOSS SCREEN ===== -->
+<div id="boss-screen" class="screen">
+  <div style="width:100%;max-width:600px;margin:20px auto;padding:0 20px">
+    <div class="boss-header">
+      <span class="boss-emoji-big" id="boss-emoji">👾</span>
+      <div class="boss-title-text">⚔️ BOSS BATTLE ⚔️</div>
+    </div>
+    <div class="boss-hearts-row" id="boss-hearts">❤️❤️❤️</div>
+    <div class="game-card boss-card" id="boss-card">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="boss-progress" style="width:0%"></div>
+      </div>
+      <div class="timer-bar-wrap">
+        <div class="timer-bar" id="boss-timer-bar" style="width:100%"></div>
+      </div>
+      <div class="question-num" id="boss-q-num"></div>
+      <div class="question-text" id="boss-question"></div>
+      <div class="options-grid" id="boss-options"></div>
+      <div id="boss-explanation"></div>
+      <div class="mt-16" id="boss-next-wrap" style="display:none">
+        <button class="btn btn-full" style="background:linear-gradient(135deg,#9333EA,#6B21A8)" onclick="nextBossQuestion()">Continue ⚔️</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROFILE SCREEN ===== -->
+<div id="profile-screen" class="screen">
+  <div style="width:100%;max-width:600px;margin:0 auto;padding:20px">
+    <div class="screen-title">👤 Profile</div>
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="profile-avatar-big" id="prof-avatar">🐣</div>
+        <div>
+          <div class="profile-name">StudyHero</div>
+          <div class="profile-level-text" id="prof-level">Level 1 — Novice</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-val" id="prof-xp">0</div><div class="stat-label">Total XP</div></div>
+        <div class="stat-box"><div class="stat-val" id="prof-coins">0</div><div class="stat-label">Coins 🪙</div></div>
+        <div class="stat-box"><div class="stat-val" id="prof-streak">0</div><div class="stat-label">Streak 🔥</div></div>
+        <div class="stat-box"><div class="stat-val" id="prof-chapters">0</div><div class="stat-label">Chapters Done</div></div>
+        <div class="stat-box"><div class="stat-val" id="prof-quizzes">0</div><div class="stat-label">Quizzes Taken</div></div>
+        <div class="stat-box"><div class="stat-val" id="prof-hearts">5/5</div><div class="stat-label">Hearts ❤️</div></div>
+      </div>
+    </div>
+    <div class="profile-card">
+      <div class="section-title">🏆 Achievements</div>
+      <div class="achievements-grid" id="achievements-grid"></div>
+    </div>
+    <div class="profile-card">
+      <div class="section-title">📈 XP History (last 14 sessions)</div>
+      <div class="xp-chart" id="xp-chart"></div>
+    </div>
+    <div class="profile-card" style="text-align:center">
+      <div class="section-title">⚠️ Danger Zone</div>
+      <p style="color:var(--text2);font-size:13px;margin:8px 0 16px">This will erase all your progress, XP, coins, streaks and quiz history.</p>
+      <button onclick="resetAllProgress()" style="background:#EF4444;color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.2s" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">🗑️ Reset All Progress</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SHOP SCREEN ===== -->
+<div id="shop-screen" class="screen">
+  <div style="width:100%;max-width:600px;margin:0 auto;padding:20px">
+    <div class="screen-title">🛒 Power-Up Shop</div>
+    <div class="screen-sub">Balance: <span id="shop-coins" style="color:var(--yellow);font-weight:800">🪙 0</span></div>
+    <div class="shop-grid">
+      <div class="shop-item">
+        <div class="shop-icon">❤️‍🔥</div>
+        <div class="shop-name">Heart Refill</div>
+        <div class="shop-desc">Restore all 5 hearts instantly</div>
+        <div class="shop-price">🪙 50</div>
+        <button class="btn btn-red btn-full btn-sm" onclick="buyItem('hearts',50)">Buy Now</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-icon">⚡</div>
+        <div class="shop-name">XP Boost</div>
+        <div class="shop-desc">2× XP for your next quiz session</div>
+        <div class="shop-price">🪙 30</div>
+        <button class="btn btn-yellow btn-full btn-sm" onclick="buyItem('xpboost',30)">Buy Now</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-icon">🛡️</div>
+        <div class="shop-name">Streak Shield</div>
+        <div class="shop-desc">Protect your streak if you miss a day</div>
+        <div class="shop-price">🪙 20</div>
+        <button class="btn btn-green btn-full btn-sm" onclick="buyItem('streakshield',20)">Buy Now</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-icon">🎨</div>
+        <div class="shop-name">Avatar Skin</div>
+        <div class="shop-desc">Unlock a random special avatar ✨</div>
+        <div class="shop-price">🪙 100</div>
+        <button class="btn btn-full btn-sm" onclick="buyItem('avatar',100)">Buy Now</button>
+      </div>
+    </div>
+    <div class="mt-12" id="shop-owned" style="color:var(--text2);font-size:12px;text-align:center"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+// ============================================================
+//  CONSTANTS
+// ============================================================
+const AVATARS        = ['🐣','🐥','🦅','🦁','🐉'];
+const LEVEL_TITLES   = ['Novice','Apprentice','Scholar','Expert','Master','Legend'];
+const LEVEL_XP_REQ  = [0,100,300,600,1100,2000,9999]; // XP to reach each level
+const BOSS_EMOJIS    = ['👾','🐲','💀','🤖','🧙','👹'];
+const AVATAR_SKINS   = ['🦊','🐺','🦄','🐙','🦋','🐲','🦁','🐯'];
+
+const ACHIEVEMENTS_DEF = [
+  {id:'first_chapter', name:'First Chapter', icon:'📖', desc:'Complete your first chapter'},
+  {id:'perfect_score', name:'Perfect Score',  icon:'💯', desc:'Get 100% on a quiz'},
+  {id:'streak_5',      name:'5-Day Streak',   icon:'🔥', desc:'Study 5 days in a row'},
+  {id:'boss_slayer',   name:'Boss Slayer',    icon:'⚔️',  desc:'Win a Boss Battle'},
+  {id:'speed_reader',  name:'Speed Reader',   icon:'⚡',  desc:'Answer 3 questions quickly in a row'},
+  {id:'coin_200',      name:'Coin Collector', icon:'🪙',  desc:'Collect 200 coins total'},
+  {id:'level_5',       name:'Level 5',        icon:'🌟',  desc:'Reach level 5'},
+  {id:'flawless',      name:'Flawless',       icon:'🛡️',  desc:'Complete a quiz without losing a heart'},
+  {id:'combo_5',       name:'Combo Master',   icon:'💥',  desc:'Reach a 5× combo'},
+  {id:'triple_star',   name:'Triple Star',    icon:'⭐',   desc:'Get 3 stars on any chapter'},
+];
+
+// ============================================================
+//  STATE
+// ============================================================
+let state = {
+  xp:0, level:1, coins:0, hearts:5, maxHearts:5,
+  streak:0, lastStudyDate:null, heartRegenTime:null,
+  completedChapters:{}, scores:{}, achievements:[],
+  quizzesTaken:0, xpHistory:[], shopItems:{},
+  apiKey:'', darkMode:true, avatarSkin:null,
+  currentChapterIdx:0,
+};
+let chapters = [];
+let currentChapter = 0;
+
+// quiz / lesson runtime
+let lessonCards=[], lessonStep=0, lessonXP=0;
+let quizData={questions:[],current:0,correct:0,xpEarned:0,coinsEarned:0,combo:0,type:'',noMistakes:true};
+let bossData={questions:[],current:0,correct:0,xpEarned:0,hearts:3};
+let timerInterval=null, timerLeft=30;
+
+// ============================================================
+//  PERSISTENCE
+// ============================================================
+function saveState(){
+  try{localStorage.setItem('sq_state',JSON.stringify(state));}catch(e){}
+  try{
+    const slim = chapters.map(c=>({title:c.title, text:c.text.substring(0,6000)}));
+    localStorage.setItem('sq_chapters',JSON.stringify(slim));
+  }catch(e){}
+}
+function loadState(){
+  try{const s=localStorage.getItem('sq_state'); if(s) state={...state,...JSON.parse(s)};}catch(e){}
+  try{const c=localStorage.getItem('sq_chapters'); if(c) chapters=JSON.parse(c);}catch(e){}
+  const preserved=localStorage.getItem('sq_preserved_key');
+  if(preserved&&!state.apiKey){state.apiKey=preserved;localStorage.removeItem('sq_preserved_key');}
+}
+function getCached(k){ try{const v=localStorage.getItem('sq_cache_'+k); return v?JSON.parse(v):null;}catch(e){return null;} }
+function setCached(k,v){ try{localStorage.setItem('sq_cache_'+k,JSON.stringify(v));}catch(e){} }
+
+// ============================================================
+//  BOOT
+// ============================================================
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+window.addEventListener('load',()=>{
+  loadState();
+  checkHeartRegen();
+  checkStreak(false);
+  applyTheme();
+  updateTopBar();
+
+  if(state.apiKey){
+    document.getElementById('api-key-input').value=state.apiKey;
+    document.getElementById('api-key-status').textContent='✅ API key loaded';
+  }
+
+  // Drag-and-drop
+  const dz=document.getElementById('drop-zone');
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dragover');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));
+  dz.addEventListener('drop',e=>{
+    e.preventDefault();dz.classList.remove('dragover');
+    const f=e.dataTransfer.files[0];
+    if(f&&f.type==='application/pdf') handleFile(f);
+  });
+
+  if(chapters.length>0){
+    renderChapterListSetup();
+    document.getElementById('chapter-section').style.display='block';
+    showScreen('map-screen');
+    document.getElementById('topbar').classList.add('visible');
+  }
+});
+
+// ============================================================
+//  THEME
+// ============================================================
+function toggleTheme(){state.darkMode=!state.darkMode;saveState();applyTheme();}
+function applyTheme(){
+  document.body.classList.toggle('light-mode',!state.darkMode);
+  document.getElementById('theme-btn').textContent=state.darkMode?'🌙':'☀️';
+}
+
+// ============================================================
+//  API KEY
+// ============================================================
+function saveApiKey(){
+  const k=document.getElementById('api-key-input').value.trim();
+  if(!k){showToast('Please enter your API key');return;}
+  state.apiKey=k; saveState();
+  document.getElementById('api-key-status').textContent='✅ API key saved!';
+  showToast('🔑 API key saved!');
+}
+
+// ============================================================
+//  PDF PARSING
+// ============================================================
+async function handleFile(file){
+  if(!file) return;
+  const statusEl=document.getElementById('pdf-status');
+  statusEl.innerHTML='<div class="spinner-wrap"><div class="spinner"></div><div class="text-muted">Reading PDF...</div></div>';
+  try{
+    const buf=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    const total=pdf.numPages;
+    let fullText='';
+    for(let i=1;i<=total;i++){
+      const page=await pdf.getPage(i);
+      const content=await page.getTextContent();
+      fullText+=content.items.map(x=>x.str).join(' ')+'\n';
+      if(i%15===0) statusEl.innerHTML=`<div class="text-muted">Page ${i}/${total}...</div>`;
+    }
+    statusEl.innerHTML=`<span style="color:var(--green)">✅ Loaded! ${total} pages</span>`;
+    parseChapters(fullText);
+  }catch(e){
+    statusEl.innerHTML=`<span style="color:var(--red)">❌ ${e.message}</span>`;
+  }
+}
+
+function parseChapters(text){
+  const lines=text.split('\n');
+  const starts=[];
+  const chapterRx=/^\s*(chapter|CHAPTER|unit|UNIT|section|Section|lesson|Lesson|MODULE)\s*[\d\w]+[\s:.]/i;
+  const numericRx=/^\s*\d{1,2}[\.\s]\s+[A-Z][A-Za-z\s]{4,50}$/;
+  lines.forEach((line,i)=>{
+    const t=line.trim();
+    if(t.length>4&&t.length<100&&(chapterRx.test(t)||numericRx.test(t))){
+      starts.push({idx:i,title:t});
+    }
+  });
+
+  if(starts.length<2){
+    // fallback: split into 8 equal parts
+    const words=text.split(/\s+/);
+    const sz=Math.ceil(words.length/8);
+    chapters=[];
+    for(let i=0;i<8&&i*sz<words.length;i++){
+      chapters.push({title:`Part ${i+1}`,text:words.slice(i*sz,(i+1)*sz).join(' ')});
+    }
+  }else{
+    chapters=starts.map((s,i)=>{
+      const end=i+1<starts.length?starts[i+1].idx:lines.length;
+      return {title:s.title.replace(/\s+/g,' ').substring(0,80),text:lines.slice(s.idx,end).join('\n')};
+    }).filter(c=>c.text.trim().length>80);
+  }
+  saveState();
+  renderChapterListSetup();
+  document.getElementById('chapter-section').style.display='block';
+  document.getElementById('chapter-count').textContent=`Found ${chapters.length} chapters`;
+}
+
+function renderChapterListSetup(){
+  document.getElementById('chapter-list').innerHTML=
+    chapters.slice(0,20).map((c,i)=>`<div class="chapter-item">${i+1}. ${c.title.substring(0,60)}</div>`).join('');
+}
+
+// ============================================================
+//  START ADVENTURE
+// ============================================================
+function startAdventure(){
+  if(!state.apiKey){showToast('⚠️ Enter your Gemini API key first!');return;}
+  if(!chapters.length){showToast('⚠️ Upload a PDF first!');return;}
+  saveState();
+  document.getElementById('topbar').classList.add('visible');
+  showScreen('map-screen');
+}
+
+// ============================================================
+//  WORLD MAP
+// ============================================================
+function renderMap(){
+  const container=document.getElementById('map-nodes');
+  container.innerHTML='';
+  const firstUnlocked=getFirstUnlocked();
+
+  chapters.forEach((ch,i)=>{
+    const done=!!state.completedChapters[i];
+    const stars=done?getStars(state.scores[i]||0):0;
+    const isCurrent=!done&&i===firstUnlocked;
+    const isLocked=i>firstUnlocked&&!done;
+
+    const wrap=document.createElement('div');
+    wrap.className='map-node-wrap';
+
+    const node=document.createElement('div');
+    node.className='map-node '+(done?'completed':isCurrent?'current':isLocked?'locked':'unlocked');
+
+    if(isLocked){
+      node.innerHTML='<span class="node-lock">🔒</span>';
+    }else{
+      const starsStr=done?(stars>=3?'⭐⭐⭐':stars>=2?'⭐⭐☆':'⭐☆☆'):'';
+      node.innerHTML=`<span class="node-num">${i+1}</span><span class="node-stars">${starsStr}</span>`;
+    }
+    if(!isLocked) node.onclick=()=>openChapter(i);
+
+    const label=document.createElement('div');
+    label.className='node-label';
+    label.textContent=ch.title.substring(0,45);
+
+    wrap.appendChild(node);
+    wrap.appendChild(label);
+    container.appendChild(wrap);
+
+    if(i<chapters.length-1){
+      const conn=document.createElement('div');
+      conn.className='map-connector';
+      container.appendChild(conn);
+    }
+  });
+}
+
+function getFirstUnlocked(){
+  for(let i=0;i<chapters.length;i++) if(!state.completedChapters[i]) return i;
+  return chapters.length-1;
+}
+function getStars(pct){ return pct>=90?3:pct>=60?2:pct>=30?1:0; }
+
+// ============================================================
+//  CHAPTER SCREEN
+// ============================================================
+async function openChapter(idx){
+  currentChapter=idx;
+  const ch=chapters[idx];
+  document.getElementById('ch-title').textContent=ch.title;
+
+  const stars=state.scores[idx]?getStars(state.scores[idx]):0;
+  document.getElementById('ch-stars').textContent=stars>=3?'⭐⭐⭐':stars>=2?'⭐⭐':stars>=1?'⭐':'';
+
+  const bossAction=document.getElementById('boss-action');
+  const bossSub=document.getElementById('boss-sub');
+  if(state.completedChapters[idx]){
+    bossAction.classList.remove('locked-action');
+    bossSub.textContent='10 hard questions • Big XP';
+  }else{
+    bossAction.classList.add('locked-action');
+    bossSub.textContent='🔒 Pass Quiz first';
+  }
+
+  showScreen('chapter-screen');
+  document.getElementById('ch-loading').style.display='block';
+  document.getElementById('ch-summary').style.display='none';
+
+  const ck=`summary_${idx}`;
+  let summary=getCached(ck);
+  if(!summary){
+    const prompt=`Summarize this chapter in 3 clear, engaging sentences for a Class 12 student. Chapter: "${ch.text.substring(0,2000)}"`;
+    summary=await callGemini(prompt);
+    if(summary) setCached(ck,summary);
+  }
+
+  document.getElementById('ch-loading').style.display='none';
+  document.getElementById('ch-summary').style.display='block';
+  document.getElementById('ch-summary').textContent=summary||'(No summary — check your API key)';
+}
+
+// ============================================================
+//  GEMINI API
+// ============================================================
+async function callGemini(prompt){
+  if(!state.apiKey){showToast('⚠️ API key required!');return null;}
+  try{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${state.apiKey}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:2048}})
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'API error '+res.status);}
+    const data=await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text||null;
+  }catch(e){
+    showToast('❌ '+e.message.substring(0,60));
+    return null;
+  }
+}
+
+async function callGeminiJSON(prompt){
+  const raw=await callGemini(prompt+'\n\nReturn ONLY a valid JSON array. No markdown, no code fences, no extra text.');
+  if(!raw) return null;
+  let txt=raw.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
+  const m=txt.match(/\[[\s\S]*\]/);
+  if(m) txt=m[0];
+  try{return JSON.parse(txt);}catch(e){return null;}
+}
+
+// ============================================================
+//  LESSON MODE
+// ============================================================
+async function startLesson(){
+  lessonStep=0; lessonXP=0; lessonCards=[];
+  showScreen('lesson-screen');
+  setLessonCard('<div class="spinner-wrap"><div class="spinner"></div><div class="text-muted">Generating lesson cards... ✨</div></div>','','');
+
+  const ch=chapters[currentChapter];
+  const ck=`lessons_${currentChapter}`;
+  let cards=getCached(ck);
+  if(!cards){
+    cards=await callGeminiJSON(
+      `Create exactly 5 lesson cards for a Class 12 student covering the key concepts in this chapter.\n`+
+      `Chapter text: "${ch.text.substring(0,3000)}"\n`+
+      `Return a JSON array of 5 objects: `+
+      `[{"concept":"...","explanation":"2-3 sentences","emoji":"single emoji","checkQuestion":"MCQ question","checkOptions":["option A text","option B text","option C text","option D text"],"checkCorrect":0,"checkExplanation":"why correct"}]`+
+      `\ncheckCorrect is 0-3 (index of correct option).`
+    );
+    if(cards) setCached(ck,cards);
+  }
+
+  if(!cards||!Array.isArray(cards)||!cards.length){
+    setLessonCard('<div style="color:var(--red)">❌ Could not load lesson cards. Please check your API key.</div>','','');
+    return;
+  }
+  lessonCards=cards;
+  renderLessonStep();
+}
+
+function setLessonCard(content, actionsHtml, label){
+  document.getElementById('lesson-content').innerHTML=content;
+  document.getElementById('lesson-actions').innerHTML=actionsHtml;
+  document.getElementById('lesson-step-label').textContent=label;
+}
+
+function renderLessonStep(){
+  const total=lessonCards.length*2;
+  const cardIdx=Math.floor(lessonStep/2);
+  const isCheck=lessonStep%2===1;
+  const pct=(lessonStep/total)*100;
+  document.getElementById('lesson-progress').style.width=pct+'%';
+
+  if(cardIdx>=lessonCards.length){ finishLesson(); return; }
+  const card=lessonCards[cardIdx];
+
+  if(!isCheck){
+    document.getElementById('lesson-step-label').textContent=`Card ${cardIdx+1} / ${lessonCards.length}`;
+    document.getElementById('lesson-content').innerHTML=`
+      <div class="lesson-card-content">
+        <div class="lesson-emoji">${card.emoji||'📚'}</div>
+        <div class="lesson-concept">${card.concept||'Concept'}</div>
+        <div class="lesson-explanation">${card.explanation||''}</div>
+      </div>`;
+    document.getElementById('lesson-actions').innerHTML=`<button class="btn btn-full" onclick="lessonAdvance()">Check Understanding →</button>`;
+  }else{
+    document.getElementById('lesson-step-label').textContent=`🧠 Quick Check — Card ${cardIdx+1}`;
+    const opts=(card.checkOptions||['Option A','Option B','Option C','Option D']);
+    document.getElementById('lesson-content').innerHTML=`
+      <div class="lesson-check-title">Quick Check</div>
+      <div class="question-text" style="font-size:15px">${card.checkQuestion||'What did you just learn?'}</div>
+      <div class="options-grid" id="lesson-opts">
+        ${opts.map((o,i)=>`<button class="option-btn" onclick="answerLessonCheck(${i})" id="lopt-${i}">
+          <span class="option-letter">${String.fromCharCode(65+i)}</span>${o}</button>`).join('')}
+      </div>
+      <div id="lesson-exp"></div>`;
+    document.getElementById('lesson-actions').innerHTML='';
+  }
+}
+
+function lessonAdvance(){ lessonStep++; renderLessonStep(); }
+
+function answerLessonCheck(idx){
+  const cardIdx=Math.floor(lessonStep/2);
+  const card=lessonCards[cardIdx];
+  const correct=typeof card.checkCorrect==='number'?card.checkCorrect:0;
+  const ok=idx===correct;
+  document.querySelectorAll('#lesson-opts .option-btn').forEach(b=>b.disabled=true);
+  document.getElementById('lopt-'+idx).classList.add(ok?'correct':'wrong');
+  document.getElementById('lopt-'+correct).classList.add('correct');
+  document.getElementById('lesson-exp').innerHTML=ok
+    ?`<div class="explanation-box">✅ Correct! ${card.checkExplanation||''}</div>`
+    :`<div class="explanation-box wrong-exp">❌ ${card.checkExplanation||'Not quite right.'}</div>`;
+  if(ok){gainXP(10);lessonXP+=10;triggerConfetti();flashScreen('green');}
+  else{loseHeart();flashScreen('red');}
+  document.getElementById('lesson-actions').innerHTML=`<button class="btn btn-full mt-12" onclick="lessonAdvance()">Continue →</button>`;
+}
+
+function finishLesson(){
+  showEndScreen('lesson',lessonXP,0,100,'lesson-screen');
+}
+
+// ============================================================
+//  QUIZ MODE
+// ============================================================
+async function startQuiz(type){
+  if(state.hearts<=0){showToast('❤️ No hearts! Wait for regen or buy in Shop.');return;}
+  const n=type==='quick'?5:10;
+  showScreen('quiz-screen');
+  document.getElementById('quiz-question').textContent='';
+  document.getElementById('quiz-options').innerHTML='<div class="spinner-wrap"><div class="spinner"></div><div class="text-muted">Generating quiz...</div></div>';
+  document.getElementById('quiz-next-wrap').style.display='none';
+  document.getElementById('quiz-explanation').innerHTML='';
+  document.getElementById('combo-display').innerHTML='';
+
+  const ch=chapters[currentChapter];
+  const ck=`quiz_${currentChapter}_${type}`;
+  let qs=getCached(ck);
+  if(!qs){
+    qs=await callGeminiJSON(
+      `Generate exactly ${n} multiple-choice questions from this chapter for a Class 12 board exam.\n`+
+      `Chapter: "${ch.text.substring(0,3500)}"\n`+
+      `Return JSON array: [{"question":"...","options":["A text","B text","C text","D text"],"correct":0,"explanation":"..."}]\n`+
+      `"correct" is the 0-based index of the right answer.`
+    );
+    if(qs) setCached(ck,qs);
+  }
+
+  if(!qs||!Array.isArray(qs)||!qs.length){
+    showToast('❌ Could not generate quiz. Check API key.');
+    showScreen('chapter-screen'); return;
+  }
+
+  quizData={questions:qs.slice(0,n),current:0,correct:0,xpEarned:0,coinsEarned:0,combo:0,type,noMistakes:true};
+  state.quizzesTaken++;
+  renderQuizQ();
+}
+
+function renderQuizQ(){
+  const q=quizData.questions[quizData.current];
+  const total=quizData.questions.length;
+  document.getElementById('quiz-progress').style.width=((quizData.current/total)*100)+'%';
+  document.getElementById('quiz-q-num').textContent=`Question ${quizData.current+1} / ${total}`;
+  document.getElementById('quiz-question').textContent=q.question;
+  document.getElementById('quiz-explanation').innerHTML='';
+  document.getElementById('quiz-next-wrap').style.display='none';
+  document.getElementById('combo-display').innerHTML=quizData.combo>=2
+    ?`<div class="combo-badge">🔥 ${quizData.combo}× COMBO!</div>`:'';
+
+  document.getElementById('quiz-options').innerHTML=(q.options||[]).map((o,i)=>
+    `<button class="option-btn" onclick="answerQuiz(${i})" id="qopt-${i}">
+      <span class="option-letter">${String.fromCharCode(65+i)}</span>${o}</button>`
+  ).join('');
+  startTimer('timer-bar',30,()=>timeoutQuiz());
+}
+
+function answerQuiz(idx){
+  clearTimer();
+  const q=quizData.questions[quizData.current];
+  const correct=typeof q.correct==='number'?q.correct:0;
+  const ok=idx===correct;
+  document.querySelectorAll('#quiz-options .option-btn').forEach(b=>b.disabled=true);
+  document.getElementById('qopt-'+idx).classList.add(ok?'correct':'wrong');
+  document.getElementById('qopt-'+correct).classList.add('correct');
+
+  if(ok){
+    quizData.correct++; quizData.combo++;
+    const mult=comboMult(quizData.combo);
+    const base=15; const xp=Math.round(base*mult*(state.shopItems.xpboost?2:1));
+    quizData.xpEarned+=xp; quizData.coinsEarned+=5;
+    gainXP(xp); gainCoins(5);
+    document.getElementById('quiz-explanation').innerHTML=`<div class="explanation-box">✅ Correct!${mult>1?' ('+mult+'× combo!)':''} ${q.explanation||''}</div>`;
+    triggerConfetti(); flashScreen('green'); showXPPopup('+'+xp+' XP');
+    if(quizData.combo>=5) checkAchievement('combo_5');
+  }else{
+    quizData.combo=0; quizData.noMistakes=false;
+    loseHeart();
+    document.getElementById('quiz-explanation').innerHTML=`<div class="explanation-box wrong-exp">❌ Correct: ${String.fromCharCode(65+correct)}. ${q.explanation||''}</div>`;
+    flashScreen('red');
+  }
+  document.getElementById('quiz-next-wrap').style.display='block';
+}
+
+function timeoutQuiz(){
+  document.querySelectorAll('#quiz-options .option-btn').forEach(b=>b.disabled=true);
+  quizData.combo=0; quizData.noMistakes=false;
+  loseHeart(); flashScreen('red');
+  const q=quizData.questions[quizData.current];
+  const correct=typeof q.correct==='number'?q.correct:0;
+  document.getElementById('qopt-'+correct).classList.add('correct');
+  document.getElementById('quiz-explanation').innerHTML=`<div class="explanation-box wrong-exp">⏰ Time's up! ${q.explanation||''}</div>`;
+  document.getElementById('quiz-next-wrap').style.display='block';
+}
+
+function nextQuizQuestion(){
+  quizData.current++;
+  if(quizData.current>=quizData.questions.length) endQuiz();
+  else renderQuizQ();
+}
+
+function endQuiz(){
+  const pct=Math.round((quizData.correct/quizData.questions.length)*100);
+  const old=state.scores[currentChapter]||0;
+  state.scores[currentChapter]=Math.max(old,pct);
+  if(pct>=40){ state.completedChapters[currentChapter]=true; checkAchievement('first_chapter'); }
+  if(pct===100) checkAchievement('perfect_score');
+  if(quizData.noMistakes) checkAchievement('flawless');
+  if(getStars(pct)===3) checkAchievement('triple_star');
+  checkStreak(true);
+  state.shopItems.xpboost=false;
+  saveState();
+  showEndScreen('quiz',quizData.xpEarned,quizData.coinsEarned,pct,'quiz-screen');
+}
+
+function comboMult(c){ return c>=6?3:c>=4?2:c>=2?1.5:1; }
+
+// ============================================================
+//  BOSS BATTLE
+// ============================================================
+async function startBoss(){
+  if(!state.completedChapters[currentChapter]){showToast('🔒 Complete the Quick Quiz first!');return;}
+  showScreen('boss-screen');
+  document.getElementById('boss-emoji').textContent=BOSS_EMOJIS[currentChapter%BOSS_EMOJIS.length];
+  renderBossHearts(3);
+  document.getElementById('boss-question').textContent='';
+  document.getElementById('boss-options').innerHTML='<div class="spinner-wrap"><div class="spinner"></div></div>';
+  document.getElementById('boss-next-wrap').style.display='none';
+  document.getElementById('boss-explanation').innerHTML='';
+
+  const ch=chapters[currentChapter];
+  const ck=`boss_${currentChapter}`;
+  let qs=getCached(ck);
+  if(!qs){
+    qs=await callGeminiJSON(
+      `Generate exactly 10 challenging MCQ questions testing deep understanding of this chapter for a Class 12 exam.\n`+
+      `Chapter: "${ch.text.substring(0,3500)}"\n`+
+      `Return JSON array: [{"question":"...","options":["A text","B text","C text","D text"],"correct":0,"explanation":"..."}]\n`+
+      `"correct" is the 0-based index. Make questions harder than standard quiz level.`
+    );
+    if(qs) setCached(ck,qs);
+  }
+
+  if(!qs||!Array.isArray(qs)||!qs.length){showToast('❌ Could not load boss questions.');showScreen('chapter-screen');return;}
+  bossData={questions:qs.slice(0,10),current:0,correct:0,xpEarned:0,hearts:3};
+  renderBossQ();
+}
+
+function renderBossHearts(n){
+  document.getElementById('boss-hearts').textContent='❤️'.repeat(n)+'🖤'.repeat(3-n);
+}
+
+function renderBossQ(){
+  const q=bossData.questions[bossData.current];
+  const total=bossData.questions.length;
+  document.getElementById('boss-progress').style.width=((bossData.current/total)*100)+'%';
+  document.getElementById('boss-q-num').textContent=`⚔️ Attack ${bossData.current+1} / ${total}`;
+  document.getElementById('boss-question').textContent=q.question;
+  document.getElementById('boss-explanation').innerHTML='';
+  document.getElementById('boss-next-wrap').style.display='none';
+
+  document.getElementById('boss-options').innerHTML=(q.options||[]).map((o,i)=>
+    `<button class="option-btn" onclick="answerBoss(${i})" id="bopt-${i}">
+      <span class="option-letter">${String.fromCharCode(65+i)}</span>${o}</button>`
+  ).join('');
+  startTimer('boss-timer-bar',40,()=>timeoutBoss());
+}
+
+function answerBoss(idx){
+  clearTimer();
+  const q=bossData.questions[bossData.current];
+  const correct=typeof q.correct==='number'?q.correct:0;
+  const ok=idx===correct;
+  document.querySelectorAll('#boss-options .option-btn').forEach(b=>b.disabled=true);
+  document.getElementById('bopt-'+idx).classList.add(ok?'correct':'wrong');
+  document.getElementById('bopt-'+correct).classList.add('correct');
+  if(ok){
+    bossData.correct++; bossData.xpEarned+=25;
+    gainXP(25); gainCoins(10);
+    document.getElementById('boss-explanation').innerHTML=`<div class="explanation-box">⚔️ Hit! +25 XP ${q.explanation||''}</div>`;
+    triggerConfetti(); flashScreen('green'); showXPPopup('+25 XP');
+  }else{
+    bossData.hearts--;
+    renderBossHearts(bossData.hearts);
+    document.getElementById('boss-explanation').innerHTML=`<div class="explanation-box wrong-exp">💥 Ouch! ${q.explanation||''}</div>`;
+    flashScreen('red');
+    if(bossData.hearts<=0){ clearTimer(); setTimeout(()=>endBoss(false),400); return; }
+  }
+  document.getElementById('boss-next-wrap').style.display='block';
+}
+
+function timeoutBoss(){
+  bossData.hearts--;
+  renderBossHearts(bossData.hearts);
+  const q=bossData.questions[bossData.current];
+  const correct=typeof q.correct==='number'?q.correct:0;
+  document.querySelectorAll('#boss-options .option-btn').forEach(b=>b.disabled=true);
+  document.getElementById('bopt-'+correct).classList.add('correct');
+  document.getElementById('boss-explanation').innerHTML=`<div class="explanation-box wrong-exp">⏰ Time's up!</div>`;
+  flashScreen('red');
+  if(bossData.hearts<=0){ setTimeout(()=>endBoss(false),400); return; }
+  document.getElementById('boss-next-wrap').style.display='block';
+}
+
+function nextBossQuestion(){
+  bossData.current++;
+  if(bossData.current>=bossData.questions.length) endBoss(true);
+  else renderBossQ();
+}
+
+function endBoss(won){
+  clearTimer();
+  if(won){ gainXP(100); gainCoins(50); checkAchievement('boss_slayer'); triggerConfetti(); showToast('🏆 BOSS DEFEATED! +100 XP +50🪙'); }
+  const pct=Math.round((bossData.correct/bossData.questions.length)*100);
+  saveState();
+  showEndScreen('boss',bossData.xpEarned+(won?100:0),won?50:0,pct,'boss-screen');
+}
+
+// ============================================================
+//  END SCREEN (generic)
+// ============================================================
+function showEndScreen(type,xpEarned,coinsEarned,pct,fromScreen){
+  clearTimer();
+  const stars=getStars(pct);
+  let emoji,title;
+  if(type==='boss'){
+    emoji=pct>=70?'🏆':pct>=40?'😅':'💀';
+    title=pct>=70?'BOSS DEFEATED!':pct>=40?'You Survived!':'Defeated...';
+  }else if(type==='lesson'){
+    emoji='🎓'; title='Lesson Complete!';
+  }else{
+    emoji=pct===100?'🌟':pct>=70?'🎉':pct>=40?'📚':'😤';
+    title=pct===100?'Perfect Score!':pct>=70?'Great Job!':pct>=40?'Keep Going!':'Try Again!';
+  }
+  const starsHtml=type!=='lesson'
+    ?`<div class="end-stars">${stars>=1?'⭐':'☆'}${stars>=2?'⭐':'☆'}${stars>=3?'⭐':'☆'}</div>`:'';
+
+  const screenEl=document.getElementById(fromScreen);
+  const gc=screenEl.querySelector('.game-card');
+  if(!gc) return;
+  gc.innerHTML=`
+    <div class="end-card">
+      <div class="end-emoji">${emoji}</div>
+      <div class="end-title">${title}</div>
+      ${starsHtml}
+      <div class="end-stats">
+        <div class="end-stat"><div class="end-stat-val">${pct}%</div><div class="end-stat-label">Score</div></div>
+        <div class="end-stat"><div class="end-stat-val">+${xpEarned}</div><div class="end-stat-label">XP</div></div>
+        <div class="end-stat"><div class="end-stat-val">+${coinsEarned}</div><div class="end-stat-label">Coins🪙</div></div>
+      </div>
+      <div class="end-btns">
+        <button class="btn btn-green" style="flex:1" onclick="showScreen('map-screen');renderMap()">🗺️ Map</button>
+        <button class="btn btn-yellow" style="flex:1" onclick="openChapter(${currentChapter})">📖 Chapter</button>
+      </div>
+    </div>`;
+  updateTopBar();
+}
+
+// ============================================================
+//  TIMER
+// ============================================================
+function startTimer(barId,seconds,onDone){
+  clearTimer();
+  timerLeft=seconds;
+  const bar=document.getElementById(barId);
+  if(bar) bar.style.width='100%';
+  timerInterval=setInterval(()=>{
+    timerLeft-=0.1;
+    const pct=Math.max(0,(timerLeft/seconds)*100);
+    if(bar) bar.style.width=pct+'%';
+    if(timerLeft<=0){ clearTimer(); onDone(); }
+  },100);
+}
+function clearTimer(){ if(timerInterval){clearInterval(timerInterval);timerInterval=null;} }
+
+// ============================================================
+//  XP / LEVEL / COINS / HEARTS
+// ============================================================
+function gainXP(amount){
+  state.xp+=amount;
+  state.xpHistory.push({xp:amount,date:new Date().toDateString()});
+  if(state.xpHistory.length>14) state.xpHistory=state.xpHistory.slice(-14);
+  checkLevelUp(); updateTopBar(); saveState();
+}
+function checkLevelUp(){
+  let newLv=1;
+  for(let i=0;i<LEVEL_XP_REQ.length-1;i++) if(state.xp>=LEVEL_XP_REQ[i]) newLv=i+1;
+  newLv=Math.min(newLv,AVATARS.length);
+  if(newLv>state.level){
+    state.level=newLv;
+    showToast('🎉 LEVEL UP! You\'re now Level '+state.level+'!');
+    const el=document.getElementById('tb-avatar');
+    if(el){el.classList.add('level-up-anim');setTimeout(()=>el.classList.remove('level-up-anim'),600);}
+    if(state.level>=5) checkAchievement('level_5');
+  }
+}
+function gainCoins(n){ state.coins+=n; updateTopBar(); saveState(); if(state.coins>=200) checkAchievement('coin_200'); }
+function loseHeart(){
+  if(state.hearts>0){ state.hearts--; }
+  if(!state.heartRegenTime&&state.hearts<state.maxHearts) state.heartRegenTime=Date.now()+30*60*1000;
+  const el=document.getElementById('tb-hearts');
+  if(el){el.classList.add('heart-shake');setTimeout(()=>el.classList.remove('heart-shake'),400);}
+  updateTopBar(); saveState();
+}
+function checkHeartRegen(){
+  if(state.hearts>=state.maxHearts){state.heartRegenTime=null;return;}
+  if(state.heartRegenTime&&Date.now()>=state.heartRegenTime){
+    state.hearts=Math.min(state.maxHearts,state.hearts+1);
+    state.heartRegenTime=state.hearts<state.maxHearts?Date.now()+30*60*1000:null;
+    updateTopBar(); saveState();
+  }
+  setTimeout(checkHeartRegen,60000);
+}
+
+// ============================================================
+//  STREAK
+// ============================================================
+function checkStreak(studiedToday){
+  const today=new Date().toDateString();
+  if(!studiedToday) return; // only update on actual study
+  if(state.lastStudyDate===today) return;
+  const yesterday=new Date(Date.now()-86400000).toDateString();
+  if(state.lastStudyDate===yesterday){
+    state.streak++;
+  }else if(state.lastStudyDate&&state.lastStudyDate!==yesterday){
+    if(state.shopItems.streakshield){state.shopItems.streakshield=false;showToast('🛡️ Streak Shield saved your streak!');}
+    else state.streak=1;
+  }else{
+    state.streak=Math.max(1,state.streak);
+  }
+  state.lastStudyDate=today;
+  if(state.streak>=5) checkAchievement('streak_5');
+  updateTopBar(); saveState();
+}
+
+// ============================================================
+//  ACHIEVEMENTS
+// ============================================================
+function checkAchievement(id){
+  if(state.achievements.includes(id)) return;
+  state.achievements.push(id);
+  const a=ACHIEVEMENTS_DEF.find(x=>x.id===id);
+  if(a) showToast('🏆 '+a.name+' '+a.icon);
+  saveState();
+}
+
+// ============================================================
+//  SHOP
+// ============================================================
+function buyItem(item,price){
+  if(state.coins<price){showToast('❌ Not enough coins!');return;}
+  state.coins-=price;
+  if(item==='hearts'){state.hearts=state.maxHearts;state.heartRegenTime=null;showToast('❤️ Hearts refilled!');}
+  else if(item==='xpboost'){state.shopItems.xpboost=true;showToast('⚡ XP Boost active!');}
+  else if(item==='streakshield'){state.shopItems.streakshield=true;showToast('🛡️ Streak Shield equipped!');}
+  else if(item==='avatar'){state.avatarSkin=AVATAR_SKINS[Math.floor(Math.random()*AVATAR_SKINS.length)];showToast('🎨 New avatar: '+state.avatarSkin);}
+  updateTopBar(); saveState(); renderShop();
+}
+function renderShop(){
+  const el=document.getElementById('shop-coins'); if(el) el.textContent='🪙 '+state.coins;
+  const owned=[];
+  if(state.shopItems.xpboost) owned.push('⚡ XP Boost');
+  if(state.shopItems.streakshield) owned.push('🛡️ Streak Shield');
+  if(state.avatarSkin) owned.push('Avatar: '+state.avatarSkin);
+  const oe=document.getElementById('shop-owned'); if(oe) oe.textContent=owned.length?'Active: '+owned.join(' • '):'';
+}
+
+// ============================================================
+//  TOP BAR
+// ============================================================
+function updateTopBar(){
+  const av=state.avatarSkin||AVATARS[Math.min(state.level-1,AVATARS.length-1)];
+  const atb=document.getElementById('tb-avatar'); if(atb) atb.textContent=av;
+  const ltb=document.getElementById('tb-level'); if(ltb) ltb.textContent='Lv.'+state.level;
+  const xpLow=LEVEL_XP_REQ[state.level-1]||0;
+  const xpHigh=LEVEL_XP_REQ[state.level]||LEVEL_XP_REQ[LEVEL_XP_REQ.length-1];
+  const pct=Math.min(100,Math.max(0,((state.xp-xpLow)/(xpHigh-xpLow))*100));
+  const xbb=document.getElementById('tb-xp-bar'); if(xbb) xbb.style.width=pct+'%';
+  const hb=document.getElementById('tb-hearts'); if(hb) hb.textContent='❤️'.repeat(state.hearts)+'🖤'.repeat(Math.max(0,state.maxHearts-state.hearts));
+  const cb=document.getElementById('tb-coins'); if(cb) cb.textContent='🪙 '+state.coins;
+  const sb=document.getElementById('tb-streak'); if(sb) sb.textContent='🔥 '+state.streak;
+}
+
+// ============================================================
+//  PROFILE
+// ============================================================
+function renderProfile(){
+  const av=state.avatarSkin||AVATARS[Math.min(state.level-1,AVATARS.length-1)];
+  const pa=document.getElementById('prof-avatar'); if(pa) pa.textContent=av;
+  const pl=document.getElementById('prof-level'); if(pl) pl.textContent=`Level ${state.level} — ${LEVEL_TITLES[Math.min(state.level-1,LEVEL_TITLES.length-1)]}`;
+  ['prof-xp','prof-coins','prof-streak'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=[state.xp,state.coins,state.streak][i];
+  });
+  const pc=document.getElementById('prof-chapters'); if(pc) pc.textContent=Object.keys(state.completedChapters).length;
+  const pq=document.getElementById('prof-quizzes'); if(pq) pq.textContent=state.quizzesTaken;
+  const ph=document.getElementById('prof-hearts'); if(ph) ph.textContent=state.hearts+'/'+state.maxHearts;
+
+  const grid=document.getElementById('achievements-grid');
+  if(grid) grid.innerHTML=ACHIEVEMENTS_DEF.map(a=>{
+    const u=state.achievements.includes(a.id);
+    return `<div class="achievement ${u?'unlocked':'locked-ach'}" title="${a.desc}">
+      <div class="achievement-icon">${a.icon}</div>
+      <div class="achievement-name">${a.name}</div></div>`;
+  }).join('');
+
+  const chart=document.getElementById('xp-chart');
+  if(chart){
+    const h=state.xpHistory.slice(-14);
+    if(!h.length){chart.innerHTML='<div class="text-muted" style="font-size:12px">No history yet!</div>';return;}
+    const mx=Math.max(...h.map(x=>x.xp),1);
+    chart.innerHTML=h.map(x=>{
+      const ht=Math.max(5,(x.xp/mx)*100);
+      return `<div class="xp-bar-item" style="height:${ht}%" title="+${x.xp} XP on ${x.date}"></div>`;
+    }).join('');
+  }
+}
+
+// ============================================================
+//  SCREEN MANAGEMENT
+// ============================================================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='map-screen') renderMap();
+  if(id==='shop-screen') renderShop();
+  window.scrollTo(0,0);
+}
+
+// ============================================================
+//  VISUAL FX
+// ============================================================
+function flashScreen(color){
+  const el=document.getElementById('flash-overlay');
+  el.className='flash-overlay '+color+' show';
+  setTimeout(()=>el.classList.remove('show'),200);
+}
+
+function resetAllProgress(){
+  if(!confirm('Are you sure? This will delete ALL your progress, XP, coins, streaks, and quiz history. This cannot be undone.')) return;
+  const apiKey=state.apiKey;
+  localStorage.clear();
+  if(apiKey) localStorage.setItem('sq_preserved_key',apiKey);
+  location.reload();
+}
+
+function showToast(msg){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');
+  t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3200);
+}
+
+function showXPPopup(text){
+  const el=document.createElement('div');
+  el.className='xp-popup'; el.textContent=text;
+  el.style.left=(window.innerWidth/2-40)+'px';
+  el.style.top=(window.innerHeight*0.4)+'px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1200);
+}
+
+// ============================================================
+//  CONFETTI
+// ============================================================
+const cCanvas=document.getElementById('confetti-canvas');
+const cCtx=cCanvas.getContext('2d');
+let cParts=[], cAF=null;
+const cColors=['#7C3AED','#F59E0B','#10B981','#3B82F6','#EF4444','#F472B6','#FBBF24','#34D399'];
+
+function triggerConfetti(){
+  cCanvas.width=window.innerWidth; cCanvas.height=window.innerHeight;
+  for(let i=0;i<90;i++){
+    cParts.push({
+      x:Math.random()*cCanvas.width, y:-12,
+      vx:(Math.random()-0.5)*5, vy:Math.random()*3+2,
+      rot:Math.random()*360, rotV:(Math.random()-0.5)*10,
+      w:Math.random()*10+5, h:Math.random()*5+3,
+      color:cColors[Math.floor(Math.random()*cColors.length)],
+      life:1
+    });
+  }
+  if(!cAF) animConfetti();
+}
+
+function animConfetti(){
+  cCtx.clearRect(0,0,cCanvas.width,cCanvas.height);
+  cParts=cParts.filter(p=>p.life>0);
+  cParts.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.rot+=p.rotV; p.vy+=0.08;
+    if(p.y>cCanvas.height) p.life=0;
+    cCtx.save();
+    cCtx.globalAlpha=p.life;
+    cCtx.translate(p.x,p.y);
+    cCtx.rotate(p.rot*Math.PI/180);
+    cCtx.fillStyle=p.color;
+    cCtx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    cCtx.restore();
+  });
+  if(cParts.length>0) cAF=requestAnimationFrame(animConfetti);
+  else{ cAF=null; cCtx.clearRect(0,0,cCanvas.width,cCanvas.height); }
+}
+
+window.addEventListener('resize',()=>{ cCanvas.width=window.innerWidth; cCanvas.height=window.innerHeight; });
+</script>
+</body>
+</html>
