@@ -386,7 +386,7 @@
           <div class="tooltip-box">
             Get a FREE key at <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a><br><br>
             Sign in → Get API Key → Create API Key<br><br>
-            <span style="color:var(--green)">✓ Gemini 1.5 Flash is free!</span>
+            <span style="color:var(--green)">✓ Gemini 3.5 Flash is free!</span>
           </div>
         </div>
       </div>
@@ -665,6 +665,8 @@ function saveState(){
 function loadState(){
   try{const s=localStorage.getItem('sq_state'); if(s) state={...state,...JSON.parse(s)};}catch(e){}
   try{const c=localStorage.getItem('sq_chapters'); if(c) chapters=JSON.parse(c);}catch(e){}
+  const preserved=localStorage.getItem('sq_preserved_key');
+  if(preserved&&!state.apiKey){state.apiKey=preserved;localStorage.removeItem('sq_preserved_key');}
 }
 function getCached(k){ try{const v=localStorage.getItem('sq_cache_'+k); return v?JSON.parse(v):null;}catch(e){return null;} }
 function setCached(k,v){ try{localStorage.setItem('sq_cache_'+k,JSON.stringify(v));}catch(e){} }
@@ -1445,6 +1447,7 @@ function resetAllProgress(){
   if(!confirm('Are you sure? This will delete ALL your progress, XP, coins, streaks, and quiz history. This cannot be undone.')) return;
   const apiKey=state.apiKey;
   localStorage.clear();
+  if(apiKey) localStorage.setItem('sq_preserved_key',apiKey);
   location.reload();
 }
 
