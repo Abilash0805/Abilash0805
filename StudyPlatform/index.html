@@ -561,6 +561,11 @@
       <div class="section-title">📈 XP History (last 14 sessions)</div>
       <div class="xp-chart" id="xp-chart"></div>
     </div>
+    <div class="profile-card" style="text-align:center">
+      <div class="section-title">⚠️ Danger Zone</div>
+      <p style="color:var(--text2);font-size:13px;margin:8px 0 16px">This will erase all your progress, XP, coins, streaks and quiz history.</p>
+      <button onclick="resetAllProgress()" style="background:#EF4444;color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.2s" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">🗑️ Reset All Progress</button>
+    </div>
   </div>
 </div>
 
@@ -1434,6 +1439,13 @@ function flashScreen(color){
   const el=document.getElementById('flash-overlay');
   el.className='flash-overlay '+color+' show';
   setTimeout(()=>el.classList.remove('show'),200);
+}
+
+function resetAllProgress(){
+  if(!confirm('Are you sure? This will delete ALL your progress, XP, coins, streaks, and quiz history. This cannot be undone.')) return;
+  const apiKey=state.apiKey;
+  localStorage.clear();
+  location.reload();
 }
 
 function showToast(msg){
